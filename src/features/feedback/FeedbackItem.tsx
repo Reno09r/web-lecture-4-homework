@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Trash2, Calendar, User, ChevronUp, ChevronDown, Edit, Clock } from 'lucide-react';
 import { useFeedbackStore } from '../../entities/feedback';
 import { useThemeStore } from '../../store/themeStore';
 import { Feedback } from '../../entities/feedback/types/feedback';
+import { useThemeChange } from '../../shared/hooks/useThemeChange';
 
 interface FeedbackItemProps {
   feedback: Feedback;
@@ -11,31 +12,27 @@ interface FeedbackItemProps {
 const FeedbackItem: React.FC<FeedbackItemProps> = ({ feedback }) => {
   const [isDeleting, setIsDeleting] = useState(false);
   const [isVoting, setIsVoting] = useState(false);
-  const [forceUpdate, setForceUpdate] = useState(0);
   
   const { deleteFeedback, voteFeedback, openEditModal } = useFeedbackStore();
   const { theme } = useThemeStore();
+  useThemeChange();
   
   const isDark = theme === 'dark';
 
-  useEffect(() => {
-    const handleThemeChange = () => {
-      setForceUpdate(prev => prev + 1);
-    };
-
-    document.addEventListener('themeChange', handleThemeChange);
-    return () => {
-      document.removeEventListener('themeChange', handleThemeChange);
-    };
-  }, []);
-
   const handleDelete = async () => {
+    if (isDeleting) return;
+    
     setIsDeleting(true);
     
-    // Simulate API call delay for better UX
-    await new Promise(resolve => setTimeout(resolve, 300));
-    
-    deleteFeedback(feedback.id);
+    try {
+      // Simulate API call delay for better UX
+      await new Promise(resolve => setTimeout(resolve, 300));
+      deleteFeedback(feedback.id);
+    } catch (error) {
+      console.error('Error deleting feedback:', error);
+    } finally {
+      setIsDeleting(false);
+    }
   };
 
   const handleVote = async (increment: boolean) => {
@@ -43,17 +40,22 @@ const FeedbackItem: React.FC<FeedbackItemProps> = ({ feedback }) => {
     
     setIsVoting(true);
     
-    // Simulate API call delay for better UX
-    await new Promise(resolve => setTimeout(resolve, 200));
-    
-    voteFeedback(feedback.id, increment);
-    setIsVoting(false);
+    try {
+      // Simulate API call delay for better UX
+      await new Promise(resolve => setTimeout(resolve, 200));
+      voteFeedback(feedback.id, increment);
+    } catch (error) {
+      console.error('Error voting feedback:', error);
+    } finally {
+      setIsVoting(false);
+    }
   };
 
   const formatDate = (date: Date | string) => {
     try {
       const dateObj = date instanceof Date ? date : new Date(date);
       if (isNaN(dateObj.getTime())) {
+        console.error('Invalid date:', date);
         return 'Invalid date';
       }
       return new Intl.DateTimeFormat('en-US', {
@@ -63,7 +65,7 @@ const FeedbackItem: React.FC<FeedbackItemProps> = ({ feedback }) => {
         minute: '2-digit',
       }).format(dateObj);
     } catch (error) {
-      console.error('Error formatting date:', error);
+      console.error('Error formatting date:', error, 'Date:', date);
       return 'Invalid date';
     }
   };

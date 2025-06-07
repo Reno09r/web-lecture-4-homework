@@ -66,31 +66,31 @@ const FeedbackControls: React.FC = () => {
   ];
 
   return (
-    <div className={`glass-effect rounded-2xl p-4 fade-in ${
+    <div className={`glass-effect rounded-2xl p-6 fade-in ${
       isDark ? 'bg-gray-800/50' : ''
     }`}>
-      <div className="space-y-4">
+      <div className="space-y-6">
         {/* Search Bar */}
         <SearchBar />
         
-        <div className="flex flex-col lg:flex-row gap-4 items-start lg:items-center justify-between">
+        <div className="flex flex-col lg:flex-row gap-6 items-start lg:items-center justify-between">
           {/* Filter Controls */}
-          <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center flex-1">
-            <div className="flex items-center gap-3">
-              <div className="flex items-center gap-2">
-                <Filter className={`w-4 h-4 ${isDark ? 'text-gray-400' : 'text-gray-600'}`} />
-                <span className={`text-sm font-medium ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
+          <div className="flex flex-col sm:flex-row gap-6 items-start sm:items-center flex-1">
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-3">
+                <Filter className={`w-5 h-5 ${isDark ? 'text-gray-400' : 'text-gray-600'}`} />
+                <span className={`text-base font-medium ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
                   Filters:
                 </span>
               </div>
             </div>
             
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap gap-3">
               {/* Category Filter */}
               <select
                 value={filterBy}
                 onChange={(e) => setFilterBy(e.target.value as FilterOption)}
-                className={`px-3 py-1.5 rounded-lg text-sm font-medium border focus:outline-none focus:ring-2 focus:ring-purple-500 ${
+                className={`px-4 py-2 rounded-lg text-base font-medium border focus:outline-none focus:ring-2 focus:ring-purple-500 ${
                   isDark 
                     ? 'bg-gray-700 border-gray-600 text-white' 
                     : 'bg-white/70 border-gray-200 text-gray-700'
@@ -107,7 +107,7 @@ const FeedbackControls: React.FC = () => {
               <select
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value as StatusFilter)}
-                className={`px-3 py-1.5 rounded-lg text-sm font-medium border focus:outline-none focus:ring-2 focus:ring-purple-500 ${
+                className={`px-4 py-2 rounded-lg text-base font-medium border focus:outline-none focus:ring-2 focus:ring-purple-500 ${
                   isDark 
                     ? 'bg-gray-700 border-gray-600 text-white' 
                     : 'bg-white/70 border-gray-200 text-gray-700'
@@ -124,7 +124,7 @@ const FeedbackControls: React.FC = () => {
               <select
                 value={priorityFilter}
                 onChange={(e) => setPriorityFilter(e.target.value as PriorityFilter)}
-                className={`px-3 py-1.5 rounded-lg text-sm font-medium border focus:outline-none focus:ring-2 focus:ring-purple-500 ${
+                className={`px-4 py-2 rounded-lg text-base font-medium border focus:outline-none focus:ring-2 focus:ring-purple-500 ${
                   isDark 
                     ? 'bg-gray-700 border-gray-600 text-white' 
                     : 'bg-white/70 border-gray-200 text-gray-700'
@@ -140,17 +140,17 @@ const FeedbackControls: React.FC = () => {
           </div>
 
           {/* Sort Controls */}
-          <div className="flex items-center gap-3">
-            <div className="flex items-center gap-2">
-              <ArrowUpDown className={`w-4 h-4 ${isDark ? 'text-gray-400' : 'text-gray-600'}`} />
-              <span className={`text-sm font-medium ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-3">
+              <ArrowUpDown className={`w-5 h-5 ${isDark ? 'text-gray-400' : 'text-gray-600'}`} />
+              <span className={`text-base font-medium ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
                 Sort:
               </span>
             </div>
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value as SortOption)}
-              className={`px-3 py-1.5 rounded-lg text-sm font-medium border focus:outline-none focus:ring-2 focus:ring-purple-500 ${
+              className={`px-4 py-2 rounded-lg text-base font-medium border focus:outline-none focus:ring-2 focus:ring-purple-500 ${
                 isDark 
                   ? 'bg-gray-700 border-gray-600 text-white' 
                   : 'bg-white/70 border-gray-200 text-gray-700'

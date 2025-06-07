@@ -1,6 +1,13 @@
 import { create } from 'zustand';
 import { persist, devtools } from 'zustand/middleware';
 import { Feedback, FeedbackStats, SortOption, FilterOption, StatusFilter, PriorityFilter, FeedbackFormData } from '../types/feedback';
+import { withErrorHandling } from '../../../shared/utils/errorHandling';
+
+// Селекторы
+export const selectFilteredFeedbacks = (state: FeedbackState) => state.filteredAndSortedFeedbacks;
+export const selectStats = (state: FeedbackState) => state.stats;
+export const selectIsEditModalOpen = (state: FeedbackState) => state.isEditModalOpen;
+export const selectEditingFeedback = (state: FeedbackState) => state.editingFeedback;
 
 interface FeedbackState {
   // Data
@@ -207,134 +214,215 @@ export const useFeedbackStore = create<FeedbackState>()(
         filteredAndSortedFeedbacks: sortFeedbacks(initialFeedbacks, 'newest'),
 
         // Actions
-        addFeedback: (feedbackData: FeedbackFormData) => {
-          const now = new Date();
-          const newFeedback: Feedback = {
-            ...feedbackData,
-            id: crypto.randomUUID(),
-            votes: 0,
-            status: 'Open',
-            createdAt: now,
-            updatedAt: now,
-          };
-          
-          set((state) => {
-            const updatedFeedbacks = [newFeedback, ...state.feedbacks];
-            return {
-              feedbacks: updatedFeedbacks,
-              stats: calculateStats(updatedFeedbacks),
+        addFeedback: withErrorHandling(
+          (feedbackData: FeedbackFormData) => {
+            const now = new Date();
+            const newFeedback: Feedback = {
+              ...feedbackData,
+              id: crypto.randomUUID(),
+              votes: 0,
+              status: 'Open',
+              createdAt: now,
+              updatedAt: now,
             };
-          });
-          
-          get().applyFiltersAndSort();
-        },
+            
+            set((state) => {
+              const updatedFeedbacks = [newFeedback, ...state.feedbacks];
+              return {
+                feedbacks: updatedFeedbacks,
+                stats: calculateStats(updatedFeedbacks),
+                filteredAndSortedFeedbacks: sortFeedbacks(updatedFeedbacks, state.sortBy)
+              };
+            });
+          },
+          'addFeedback'
+        ),
 
-        updateFeedback: (id: string, updates: Partial<Feedback>) => {
-          set((state) => {
-            const updatedFeedbacks = state.feedbacks.map(feedback =>
-              feedback.id === id
-                ? { 
-                    ...feedback, 
-                    ...updates, 
-                    updatedAt: new Date(),
-                    createdAt: feedback.createdAt instanceof Date ? feedback.createdAt : new Date(feedback.createdAt)
-                  }
-                : feedback
-            );
-            return {
-              feedbacks: updatedFeedbacks,
-              stats: calculateStats(updatedFeedbacks),
-            };
-          });
-          
-          get().applyFiltersAndSort();
-        },
+        updateFeedback: withErrorHandling(
+          (id: string, updates: Partial<Feedback>) => {
+            set((state) => {
+              const updatedFeedbacks = state.feedbacks.map(feedback =>
+                feedback.id === id
+                  ? { 
+                      ...feedback, 
+                      ...updates, 
+                      updatedAt: new Date(),
+                      createdAt: feedback.createdAt instanceof Date ? feedback.createdAt : new Date(feedback.createdAt)
+                    }
+                  : feedback
+              );
+              return {
+                feedbacks: updatedFeedbacks,
+                stats: calculateStats(updatedFeedbacks),
+                filteredAndSortedFeedbacks: sortFeedbacks(updatedFeedbacks, state.sortBy)
+              };
+            });
+          },
+          'updateFeedback'
+        ),
 
-        deleteFeedback: (id: string) => {
-          set((state) => {
-            const updatedFeedbacks = state.feedbacks.filter(feedback => feedback.id !== id);
-            return {
-              feedbacks: updatedFeedbacks,
-              stats: calculateStats(updatedFeedbacks),
-            };
-          });
-          
-          get().applyFiltersAndSort();
-        },
+        deleteFeedback: withErrorHandling(
+          (id: string) => {
+            set((state) => {
+              const updatedFeedbacks = state.feedbacks.filter(feedback => feedback.id !== id);
+              return {
+                feedbacks: updatedFeedbacks,
+                stats: calculateStats(updatedFeedbacks),
+                filteredAndSortedFeedbacks: sortFeedbacks(updatedFeedbacks, state.sortBy)
+              };
+            });
+          },
+          'deleteFeedback'
+        ),
 
-        voteFeedback: (id: string, increment: boolean) => {
-          set((state) => {
-            const updatedFeedbacks = state.feedbacks.map(feedback =>
-              feedback.id === id
-                ? {
-                    ...feedback,
-                    votes: Math.max(0, feedback.votes + (increment ? 1 : -1)),
-                    updatedAt: new Date(),
-                  }
-                : feedback
-            );
-            return {
-              feedbacks: updatedFeedbacks,
-              stats: calculateStats(updatedFeedbacks),
-            };
-          });
-          
-          get().applyFiltersAndSort();
-        },
+        voteFeedback: withErrorHandling(
+          (id: string, increment: boolean) => {
+            set((state) => {
+              const updatedFeedbacks = state.feedbacks.map(feedback =>
+                feedback.id === id
+                  ? {
+                      ...feedback,
+                      votes: Math.max(0, feedback.votes + (increment ? 1 : -1)),
+                      updatedAt: new Date(),
+                    }
+                  : feedback
+              );
+              return {
+                feedbacks: updatedFeedbacks,
+                stats: calculateStats(updatedFeedbacks),
+                filteredAndSortedFeedbacks: sortFeedbacks(updatedFeedbacks, state.sortBy)
+              };
+            });
+          },
+          'voteFeedback'
+        ),
 
         // UI Actions
-        setSortBy: (sort: SortOption) => {
-          set({ sortBy: sort });
-          get().applyFiltersAndSort();
-        },
+        setSortBy: withErrorHandling(
+          (sort: SortOption) => {
+            set((state) => ({
+              sortBy: sort,
+              filteredAndSortedFeedbacks: sortFeedbacks(state.feedbacks, sort)
+            }));
+          },
+          'setSortBy'
+        ),
 
-        setFilterBy: (filter: FilterOption) => {
-          set({ filterBy: filter });
-          get().applyFiltersAndSort();
-        },
+        setFilterBy: withErrorHandling(
+          (filter: FilterOption) => {
+            set((state) => {
+              const filtered = filterFeedbacks(
+                state.feedbacks,
+                filter,
+                state.statusFilter,
+                state.priorityFilter,
+                state.searchQuery
+              );
+              return {
+                filterBy: filter,
+                filteredAndSortedFeedbacks: sortFeedbacks(filtered, state.sortBy)
+              };
+            });
+          },
+          'setFilterBy'
+        ),
 
-        setStatusFilter: (filter: StatusFilter) => {
-          set({ statusFilter: filter });
-          get().applyFiltersAndSort();
-        },
+        setStatusFilter: withErrorHandling(
+          (filter: StatusFilter) => {
+            set((state) => {
+              const filtered = filterFeedbacks(
+                state.feedbacks,
+                state.filterBy,
+                filter,
+                state.priorityFilter,
+                state.searchQuery
+              );
+              return {
+                statusFilter: filter,
+                filteredAndSortedFeedbacks: sortFeedbacks(filtered, state.sortBy)
+              };
+            });
+          },
+          'setStatusFilter'
+        ),
 
-        setPriorityFilter: (filter: PriorityFilter) => {
-          set({ priorityFilter: filter });
-          get().applyFiltersAndSort();
-        },
+        setPriorityFilter: withErrorHandling(
+          (filter: PriorityFilter) => {
+            set((state) => {
+              const filtered = filterFeedbacks(
+                state.feedbacks,
+                state.filterBy,
+                state.statusFilter,
+                filter,
+                state.searchQuery
+              );
+              return {
+                priorityFilter: filter,
+                filteredAndSortedFeedbacks: sortFeedbacks(filtered, state.sortBy)
+              };
+            });
+          },
+          'setPriorityFilter'
+        ),
 
-        setSearchQuery: (query: string) => {
-          set({ searchQuery: query });
-          get().applyFiltersAndSort();
-        },
+        setSearchQuery: withErrorHandling(
+          (query: string) => {
+            set((state) => {
+              const filtered = filterFeedbacks(
+                state.feedbacks,
+                state.filterBy,
+                state.statusFilter,
+                state.priorityFilter,
+                query
+              );
+              return {
+                searchQuery: query,
+                filteredAndSortedFeedbacks: sortFeedbacks(filtered, state.sortBy)
+              };
+            });
+          },
+          'setSearchQuery'
+        ),
 
         // Modal Actions
-        openEditModal: (feedback: Feedback) => {
-          set({ isEditModalOpen: true, editingFeedback: feedback });
-        },
+        openEditModal: withErrorHandling(
+          (feedback: Feedback) => {
+            set({ isEditModalOpen: true, editingFeedback: feedback });
+          },
+          'openEditModal'
+        ),
 
-        closeEditModal: () => {
-          set({ isEditModalOpen: false, editingFeedback: null });
-        },
+        closeEditModal: withErrorHandling(
+          () => {
+            set({ isEditModalOpen: false, editingFeedback: null });
+          },
+          'closeEditModal'
+        ),
 
         // Utility Actions
-        calculateStats: () => {
-          const state = get();
-          set({ stats: calculateStats(state.feedbacks) });
-        },
+        calculateStats: withErrorHandling(
+          () => {
+            const state = get();
+            set({ stats: calculateStats(state.feedbacks) });
+          },
+          'calculateStats'
+        ),
 
-        applyFiltersAndSort: () => {
-          const state = get();
-          const filtered = filterFeedbacks(
-            state.feedbacks,
-            state.filterBy,
-            state.statusFilter,
-            state.priorityFilter,
-            state.searchQuery
-          );
-          const sorted = sortFeedbacks(filtered, state.sortBy);
-          set({ filteredAndSortedFeedbacks: sorted });
-        },
+        applyFiltersAndSort: withErrorHandling(
+          () => {
+            const state = get();
+            const filtered = filterFeedbacks(
+              state.feedbacks,
+              state.filterBy,
+              state.statusFilter,
+              state.priorityFilter,
+              state.searchQuery
+            );
+            const sorted = sortFeedbacks(filtered, state.sortBy);
+            set({ filteredAndSortedFeedbacks: sorted });
+          },
+          'applyFiltersAndSort'
+        ),
       }),
       {
         name: 'feedback-storage',
@@ -345,15 +433,6 @@ export const useFeedbackStore = create<FeedbackState>()(
           statusFilter: state.statusFilter,
           priorityFilter: state.priorityFilter,
         }),
-        onRehydrateStorage: () => (state) => {
-          if (state) {
-            state.feedbacks = state.feedbacks.map(feedback => ({
-              ...feedback,
-              createdAt: new Date(feedback.createdAt),
-              updatedAt: new Date(feedback.updatedAt)
-            }));
-          }
-        }
       }
     ),
     { name: 'feedback-store' }

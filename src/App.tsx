@@ -37,12 +37,12 @@ function App() {
         : 'bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-100'
     }`}>
       <Header />
-      <main className="container mx-auto px-4 py-8 max-w-4xl">
-        <div className="grid gap-8 lg:grid-cols-3">
-          <div className="lg:col-span-1">
+      <main className="container mx-auto px-6 py-12 max-w-7xl">
+        <div className="grid gap-12 lg:grid-cols-12">
+          <div className="lg:col-span-4">
             <FeedbackForm />
           </div>
-          <div className="lg:col-span-2">
+          <div className="lg:col-span-8">
             <FeedbackList />
           </div>
         </div>
