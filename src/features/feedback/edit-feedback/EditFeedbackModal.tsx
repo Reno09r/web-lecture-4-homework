@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { X, Save, Tag, AlertCircle } from 'lucide-react';
-import { useFeedbackStore } from '../../entities/feedback';
-import { useThemeStore } from '../../store/themeStore';
-import { Feedback } from '../../entities/feedback/types/feedback';
+import { useFeedbackStore } from '../../../entities/feedback';
+import { useThemeStore } from '../../../store/themeStore';
+import { Feedback } from '../../../entities/feedback/types/feedback';
 
 const EditFeedbackModal: React.FC = () => {
   const { isEditModalOpen, editingFeedback, closeEditModal, updateFeedback } = useFeedbackStore();

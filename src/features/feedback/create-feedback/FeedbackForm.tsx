@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Plus, Send, Tag, X } from 'lucide-react';
-import { useFeedbackStore } from '../../entities/feedback';
-import { useThemeStore } from '../../store/themeStore';
-import { FeedbackFormData } from '../../entities/feedback/types/feedback';
+import { useFeedbackStore } from '../../../entities/feedback';
+import { useThemeStore } from '../../../store/themeStore';
+import { FeedbackFormData } from '../../../entities/feedback/types/feedback';
 
 const FeedbackForm: React.FC = () => {
   const [title, setTitle] = useState('');

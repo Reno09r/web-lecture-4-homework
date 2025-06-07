@@ -1,10 +1,10 @@
 import React, { useEffect } from 'react';
-import Header from './shared/ui/Header';
-import FeedbackForm from './features/feedback/FeedbackForm';
-import FeedbackList from './widgets/feedback/FeedbackList';
-import EditFeedbackModal from './features/feedback/EditFeedbackModal';
-import { useThemeStore } from './store/themeStore';
-import { useFeedbackStore } from './entities/feedback';
+import Header from '../shared/ui/Header';
+import FeedbackForm from '../features/feedback/create-feedback/FeedbackForm';
+import FeedbackList from '../widgets/feedback/FeedbackList';
+import EditFeedbackModal from '../features/feedback/edit-feedback/EditFeedbackModal';
+import { useThemeStore } from '../store/themeStore';
+import { useFeedbackStore } from '../entities/feedback';
 import './App.css';
 
 function App() {
