@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Filter, ArrowUpDown } from 'lucide-react';
 import { useFeedbackStore } from '@/entities/feedback';
-import { useThemeStore } from '@/app/providers/theme/themeStore';
+import { useThemeStore } from '@/store/themeStore';
 import { SortOption, FilterOption, StatusFilter, PriorityFilter } from '@/entities/feedback/types/feedback';
 import { SearchBar } from '@/features/feedback';
 
@@ -46,7 +46,7 @@ const FeedbackControls: React.FC = () => {
     { value: 'Feature', label: 'Features', emoji: '🚀' },
     { value: 'UI', label: 'UI/UX', emoji: '🎨' },
     { value: 'Performance', label: 'Performance', emoji: '⚡' },
-    { value: 'Bug', label: 'Bugs', emoji: '🐛' },
+    { value: 'Bug', label: 'Bugs', emoji: '💻' },
   ];
 
   const statusOptions: { value: StatusFilter; label: string; emoji: string }[] = [

@@ -10,7 +10,7 @@ const ThemeToggle: React.FC = () => {
   return (
     <button
       onClick={toggleTheme}
-      className={`p-2 rounded-lg transition-all duration-200 ${
+      className={`p-2 rounded-lg ${
         isDark 
           ? 'bg-gray-700 text-yellow-400 hover:bg-gray-600' 
           : 'bg-white/70 text-gray-600 hover:bg-white hover:text-yellow-500'

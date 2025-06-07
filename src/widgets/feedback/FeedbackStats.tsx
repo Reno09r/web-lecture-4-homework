@@ -25,7 +25,7 @@ const FeedbackStats: React.FC = () => {
     UI: '🎨',
     Performance: '⚡',
     Feature: '🚀',
-    Bug: '🐛',
+    Bug: '💻',
   };
 
   const statusIcons = {

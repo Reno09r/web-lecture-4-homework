@@ -71,7 +71,7 @@ const FeedbackItem: React.FC<FeedbackItemProps> = ({ feedback }) => {
       case 'Feature':
         return '🚀';
       case 'Bug':
-        return '🐛';
+        return '💻';
       default:
         return '💡';
     }

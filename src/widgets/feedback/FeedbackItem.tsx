@@ -1,3 +1,73 @@
+import React, { useState } from 'react';
+import { ThumbsUp, Edit, Trash2 } from 'lucide-react';
+import { useThemeStore } from '../../store/themeStore';
+import { useThemeChange } from '../../shared/hooks/useThemeChange';
+import { Feedback } from '../../entities/feedback/types/feedback';
+
+interface FeedbackItemProps {
+  feedback: Feedback;
+  onVote: (id: string) => void;
+  onEdit: (id: string) => void;
+  onDelete: (id: string) => void;
+}
+
+const FeedbackItem: React.FC<FeedbackItemProps> = ({ 
+  feedback,
+  onVote,
+  onEdit,
+  onDelete
+}) => {
+  const { theme } = useThemeStore();
+  useThemeChange();
+  const [hasVoted, setHasVoted] = useState(false);
+  
+  const isDark = theme === 'dark';
+  const { id, title, description, category, priority, status, votes, createdAt, tags } = feedback;
+
+  const handleVote = () => {
+    setHasVoted(!hasVoted);
+    onVote(id);
+  };
+
+  const handleEdit = () => {
+    onEdit(id);
+  };
+
+  const handleDelete = () => {
+    onDelete(id);
+  };
+
+  const formatDate = (date: Date | string) => {
+    const dateObj = new Date(date);
+    return new Intl.DateTimeFormat('en-US', {
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    }).format(dateObj);
+  };
+
+  const categoryEmoji = {
+    'UI': '🎨',
+    'Performance': '⚡',
+    'Feature': '🚀',
+    'Bug': '💻'
+  }[category] || '💡';
+
+  const statusEmoji = {
+    'Open': '📋',
+    'In Progress': '⚙️',
+    'Completed': '✅',
+    'Rejected': '❌'
+  }[status] || '📋';
+
+  const priorityEmoji = {
+    'Critical': '🔴',
+    'High': '🟠',
+    'Medium': '🟡',
+    'Low': '🟢'
+  }[priority] || '⚪';
+
   return (
     <div className={`glass-effect rounded-2xl p-6 fade-in ${
       isDark ? 'bg-gray-800/50' : ''
@@ -96,3 +166,6 @@
       </div>
     </div>
   ); 
+};
+
+export default FeedbackItem; 

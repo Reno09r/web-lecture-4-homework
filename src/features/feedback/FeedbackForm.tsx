@@ -113,7 +113,7 @@ const FeedbackForm: React.FC = () => {
               <option value="Feature">🚀 Feature Request</option>
               <option value="UI">🎨 UI/UX Improvement</option>
               <option value="Performance">⚡ Performance</option>
-              <option value="Bug">🐛 Bug Report</option>
+              <option value="Bug">💻 Bug Report</option>
             </select>
           </div>
 

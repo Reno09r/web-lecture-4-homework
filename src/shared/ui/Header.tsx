@@ -11,8 +11,8 @@ const Header: React.FC = () => {
     <header className={`glass-effect border-b ${
       isDark ? 'border-gray-700/50' : 'border-white/20'
     }`}>
-      <div className="container mx-auto px-4 py-6 max-w-4xl">
-        <div className="flex items-center justify-between">
+      <div className="container mx-auto px-4 py-6">
+        <div className="flex items-center w-full">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-gradient-to-r from-purple-500 to-blue-500 rounded-xl">
               <MessageSquare className="w-6 h-6 text-white" />
@@ -26,7 +26,9 @@ const Header: React.FC = () => {
               </p>
             </div>
           </div>
-          <ThemeToggle />
+          <div className="ml-auto">
+            <ThemeToggle />
+          </div>
         </div>
         <div className={`mt-4 flex items-center gap-2 text-sm ${
           isDark ? 'text-gray-400' : 'text-gray-500'
